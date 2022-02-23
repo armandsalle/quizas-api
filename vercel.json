@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/events.ts": {
-      "includeFiles": "cache/**"
+      "includeFiles": "cache/events.json"
     }
   }
 }
