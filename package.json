@@ -5,7 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "vercel dev --listen 8001",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "deploy": "vercel --prod"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",
@@ -26,6 +27,7 @@
     "date-fns": "^2.28.0",
     "dotenv": "^16.0.0",
     "googleapis": "^95.0.0",
-    "next-connect": "^0.12.2"
+    "next-connect": "^0.12.2",
+    "redis": "^4.0.4"
   }
 }

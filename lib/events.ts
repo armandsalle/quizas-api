@@ -1,8 +1,8 @@
 import type { calendar_v3 } from "googleapis"
 
 import type { Events, _Bedroom, _Event, _EventType } from "../types/event"
-import { cacheEvents, getCachedEvents } from "./cache"
 import { getGoogleCalendarEvents } from "./googleCalendar"
+import { connect, getCachedEvents, setCachedEvents } from "./redis"
 
 // [RESA] for a booked room, [OFF] for everything else
 function getEventType(eventTitle: string): _EventType | null {
@@ -68,10 +68,11 @@ export default async function getEvents(): Promise<{
   getFromCatch: boolean
 }> {
   try {
-    const { cachedEvents, error: cacheError } = await getCachedEvents()
+    const redisClient = await connect()
+    const cachedEvents = await getCachedEvents(redisClient)
 
     // No cache or error with the cache -> refetch and filter
-    if (cacheError || !cachedEvents || cachedEvents?.length === 0) {
+    if (!cachedEvents) {
       const { events, error } = await getGoogleCalendarEvents()
 
       if (error) {
@@ -79,12 +80,7 @@ export default async function getEvents(): Promise<{
       }
 
       const eventCollection = getFilteredEvents(events)
-
-      try {
-        await cacheEvents(eventCollection)
-      } catch (error) {
-        // Silent error
-      }
+      await setCachedEvents(redisClient, eventCollection)
 
       return { events: eventCollection, error: null, getFromCatch: false }
     }
