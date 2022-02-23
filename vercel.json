@@ -1,7 +1,0 @@
-{
-  "functions": {
-    "api/events.ts": {
-      "includeFiles": "cache/events.json"
-    }
-  }
-}
