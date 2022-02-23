@@ -67,8 +67,10 @@ export default async function getEvents(): Promise<{
   error: Error | null
   getFromCatch: boolean
 }> {
+  // Defer close connection to try{}catch{}finaly{}
+  const redisClient = await connect()
+
   try {
-    const redisClient = await connect()
     const cachedEvents = await getCachedEvents(redisClient)
 
     // No cache or error with the cache -> refetch and filter
@@ -85,8 +87,6 @@ export default async function getEvents(): Promise<{
       return { events: eventCollection, error: null, getFromCatch: false }
     }
 
-    redisClient?.quit()
-
     return { events: cachedEvents, error: null, getFromCatch: true }
   } catch (error) {
     if (error instanceof Error) {
@@ -98,5 +98,7 @@ export default async function getEvents(): Promise<{
       error: new Error("Something went wrong while filtering events"),
       getFromCatch: false,
     }
+  } finally {
+    redisClient?.quit()
   }
 }

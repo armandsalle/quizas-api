@@ -42,6 +42,14 @@ export async function setCachedEvents(
   await redisClient.set("events", JSON.stringify(events), {
     EX: TTL,
   })
-
-  await client.quit()
 }
+
+// export async function clearCache(redisClient: RedisClient) {
+//   if (redisClient === null) return null
+
+//   try {
+//     await redisClient.del("events")
+//   } catch (error) {
+//     console.log(error)
+//   }
+// }
