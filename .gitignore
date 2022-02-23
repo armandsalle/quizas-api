@@ -31,5 +31,3 @@ jspm_packages/
 # Mac files
 .DS_Store
 
-#cache
-cache/**
