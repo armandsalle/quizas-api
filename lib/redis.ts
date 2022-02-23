@@ -42,4 +42,6 @@ export async function setCachedEvents(
   await redisClient.set("events", JSON.stringify(events), {
     EX: TTL,
   })
+
+  await client.quit()
 }

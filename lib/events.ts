@@ -85,6 +85,8 @@ export default async function getEvents(): Promise<{
       return { events: eventCollection, error: null, getFromCatch: false }
     }
 
+    redisClient?.quit()
+
     return { events: cachedEvents, error: null, getFromCatch: true }
   } catch (error) {
     if (error instanceof Error) {
