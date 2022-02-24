@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",
+    "@types/nodemailer": "^6.4.4",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
     "@vercel/node": "^1.13.0",
@@ -28,6 +29,8 @@
     "dotenv": "^16.0.0",
     "googleapis": "^95.0.0",
     "next-connect": "^0.12.2",
-    "redis": "^4.0.4"
+    "nodemailer": "^6.7.2",
+    "redis": "^4.0.4",
+    "zod": "^3.12.0"
   }
 }

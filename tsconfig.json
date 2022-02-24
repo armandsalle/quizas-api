@@ -14,5 +14,5 @@
     "esModuleInterop": true
   },
   "exclude": ["./node_modules", ".eslintrc.js"],
-  "include": ["./api", "./lib"]
+  "include": ["./api", "./lib", "./middlewares", "./types"]
 }

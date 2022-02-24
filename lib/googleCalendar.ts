@@ -1,25 +1,10 @@
 import { addYears } from "date-fns"
-import * as dotenv from "dotenv"
 import { google } from "googleapis"
 import type { calendar_v3 } from "googleapis"
 
-dotenv.config({ path: "../.env" })
+import { auth, GOOGLE_ENV } from "./googleConnect"
 
-const ENV = {
-  clientEmail: process.env.CLIENT_EMAIL,
-  privateKey: process.env.PRIVATE_KEY,
-  calendarId: process.env.CALENDAR_ID,
-}
-
-const SCOPE = "https://www.googleapis.com/auth/calendar"
 const calendar = google.calendar({ version: "v3" })
-
-const auth = new google.auth.JWT(
-  ENV.clientEmail,
-  undefined,
-  ENV.privateKey,
-  SCOPE
-)
 
 export async function getGoogleCalendarEvents(): Promise<{
   events: calendar_v3.Schema$Event[]
@@ -28,7 +13,7 @@ export async function getGoogleCalendarEvents(): Promise<{
   try {
     // Get events from now to 1 year after
     const resp = await calendar.events.list({
-      calendarId: ENV.calendarId,
+      calendarId: GOOGLE_ENV.calendarId,
       auth,
       timeMin: new Date().toISOString(),
       timeMax: addYears(new Date(), 1).toISOString(),

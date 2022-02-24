@@ -1,6 +1,6 @@
 import { createClient } from "redis"
 
-import { Events } from "../types/event"
+import { Events } from "../types/types"
 
 const client = createClient({
   url: process.env.REDIS_URL,

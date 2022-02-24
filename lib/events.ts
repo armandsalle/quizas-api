@@ -1,6 +1,6 @@
 import type { calendar_v3 } from "googleapis"
 
-import type { Events, _Bedroom, _Event, _EventType } from "../types/event"
+import type { Events, _Bedroom, _Event, _EventType } from "../types/types"
 import { getGoogleCalendarEvents } from "./googleCalendar"
 import { connect, getCachedEvents, setCachedEvents } from "./redis"
 
