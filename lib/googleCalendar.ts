@@ -3,10 +3,11 @@ import { google } from "googleapis"
 import type { calendar_v3 } from "googleapis"
 
 import { auth, GOOGLE_ENV } from "./googleConnect"
+import { DateSchema } from "./validateDates"
 
 const calendar = google.calendar({ version: "v3" })
 
-export async function getGoogleCalendarEvents(): Promise<{
+export async function getGoogleCalendarEvents(dates?: DateSchema): Promise<{
   events: calendar_v3.Schema$Event[]
   error: Error | null
 }> {
@@ -15,8 +16,12 @@ export async function getGoogleCalendarEvents(): Promise<{
     const resp = await calendar.events.list({
       calendarId: GOOGLE_ENV.calendarId,
       auth,
-      timeMin: new Date().toISOString(),
-      timeMax: addYears(new Date(), 1).toISOString(),
+      timeMin: dates?.from
+        ? new Date(dates.from).toISOString()
+        : new Date().toISOString(),
+      timeMax: dates?.to
+        ? new Date(dates.to).toISOString()
+        : addYears(new Date(), 1).toISOString(),
     })
 
     if (resp.status === 200 && resp.statusText === "OK") {

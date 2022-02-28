@@ -35,6 +35,8 @@ handler.post(async (req, res) => {
       await sendMail(getHTMLMail(data))
     } catch (e) {
       res.status(500).json({ success: false, error: e })
+
+      return
     }
 
     res.status(200).json({ success: true, data, error: null })

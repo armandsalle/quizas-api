@@ -10,9 +10,15 @@ export const allowHeadersMiddleware = (
   next: NextHandler,
   allowMethods: Methods = []
 ) => {
-  const { method } = req
+  const {
+    method,
+    // headers: { origin },
+  } = req
 
   if (method && allowMethods.includes(method as Method)) {
+    // const parsedOrigin = Array.isArray(origin) ? origin[0] : origin
+    res.setHeader("Access-Control-Allow-Credentials", "true")
+    res.setHeader("Access-Control-Allow-Origin", "*")
     next()
 
     return

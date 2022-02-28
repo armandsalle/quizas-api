@@ -3,6 +3,7 @@ import type { calendar_v3 } from "googleapis"
 import type { Events, _Bedroom, _Event, _EventType } from "../types/types"
 import { getGoogleCalendarEvents } from "./googleCalendar"
 import { connect, getCachedEvents, setCachedEvents } from "./redis"
+import { DateSchema } from "./validateDates"
 
 // [RESA] for a booked room, [OFF] for everything else
 function getEventType(eventTitle: string): _EventType | null {
@@ -62,11 +63,35 @@ function getFilteredEvents(events: calendar_v3.Schema$Event[]): Events {
   }, [] as Events)
 }
 
-export default async function getEvents(): Promise<{
+export default async function getEvents(dates?: DateSchema): Promise<{
   events: Events
   error: Error | null
   getFromCatch: boolean
 }> {
+  if (dates) {
+    try {
+      const { events, error } = await getGoogleCalendarEvents(dates)
+
+      if (error) {
+        return { events: [], error, getFromCatch: false }
+      }
+
+      const eventCollection = getFilteredEvents(events)
+
+      return { events: eventCollection, error: null, getFromCatch: false }
+    } catch (error) {
+      if (error instanceof Error) {
+        return { events: [], error, getFromCatch: false }
+      }
+
+      return {
+        events: [],
+        error: new Error("Something went wrong while fetching filtered events"),
+        getFromCatch: false,
+      }
+    }
+  }
+
   // Defer close connection to try{}catch{}finaly{}
   const redisClient = await connect()
 

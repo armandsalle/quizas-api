@@ -5,17 +5,14 @@ import { z, ZodError } from "zod"
 {
   "name": "Armand Sallé",
   "email": "armand.salle@gmail.com",
+  "phone": "0606060606",
   "people": 3,
-  "rooms": [
-    "LADY CHATTERLEY",
-    "HENRY DE MONFREID",
-    "NAPOLÉON"
-  ],
-  "message": "",
+  "room": "LADY CHATTERLEY" | "HENRY DE MONFREID" | "NAPOLÉON",
+  "message": "test",
   "price": 282.9,
   "dates": {
-    "arrival": "2022-02-24T13:39:36.956Z",
-    "departure": "2022-02-26T13:39:36.956Z"
+    "arrival": "2022-02-24T13:39:36.956Z", // date.toISOString()
+    "departure": "2022-02-26T13:39:36.956Z" // date.toISOString()
   }
 }
 */
@@ -49,21 +46,6 @@ const DatesSchema = z
     }
   )
 
-const RoomsSchema = z
-  .array(z.enum(["LADY CHATTERLEY", "HENRY DE MONFREID", "NAPOLÉON"]))
-  .nonempty()
-  .max(3)
-  .refine(
-    (data) => {
-      const roomsSet = new Set(data)
-      return roomsSet.size === data.length
-    },
-    {
-      message: "You can't book the same room twice",
-      path: ["rooms"],
-    }
-  )
-
 const PhoneSchema = z
   .string()
   .nonempty()
@@ -79,16 +61,28 @@ const Schema = z.object({
   name: z.string().nonempty(),
   email: z.string().email().nonempty(),
   phone: PhoneSchema,
-  people: z.number().positive().min(1),
+  people: z
+    .number()
+    .positive()
+    .min(1)
+    .or(
+      z
+        .string()
+        .nonempty()
+        .refine((data) => Number(data), {
+          message: "People should be a number",
+          path: ["people"],
+        })
+    ),
   message: z.string().nonempty(),
   price: z.number().positive(),
-  rooms: RoomsSchema,
+  room: z.enum(["LADY CHATTERLEY", "HENRY DE MONFREID", "NAPOLÉON"]),
   dates: DatesSchema,
 })
 
 export type DataSchema = z.infer<typeof Schema>
 
-export function validateBookingRequest(rawData: unknown):
+export function validateBookingRequest(rawData: string):
   | {
       errors: z.inferFlattenedErrors<typeof Schema>
       data: null
@@ -98,7 +92,8 @@ export function validateBookingRequest(rawData: unknown):
       data: DataSchema
     } {
   try {
-    const data = Schema.parse(rawData)
+    const parsedData: unknown = JSON.parse(rawData)
+    const data = Schema.parse(parsedData)
 
     return { data, errors: null }
   } catch (e) {

@@ -59,8 +59,7 @@ export function getHTMLMail(data: DataSchema): string {
     Il y aurait ${data.people} personne(s).
     <br />
     <br />
-    Cambre(s) shouaitée(s):<br />
-    ${data.rooms.map((r) => `- ${r}`).join("<br />")}
+    Cambre shouaitée: ${data.room}
     <br />
     <br />
     Voici son message:<br />

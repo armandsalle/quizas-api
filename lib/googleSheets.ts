@@ -29,7 +29,7 @@ export async function addBookingRequestToGoogleSheet(
             formatPrice(data.price),
             formatDateString(data.dates.arrival),
             formatDateString(data.dates.departure),
-            data.rooms.join(",\n"),
+            data.room,
           ],
         ],
       },
