@@ -21,7 +21,7 @@ export async function addBookingRequestToGoogleSheet(
       requestBody: {
         values: [
           [
-            "NON",
+            "N",
             data.name,
             data.lastname,
             data.email,
