@@ -88,7 +88,7 @@ ${data.name} aimerait venir du ${formatDateString(
 
 Il y aurait ${data.people} personne(s).
 
-Cambre shouaitée: ${data.room}
+Chambre shouaitée: ${data.room}
 
 Voici son message:
 "${data.message}"
@@ -99,6 +99,6 @@ Vous pouvez contacter ${data.name} par mail <a href="mailto:${data.email}">${
     data.phone
   }</a>.
 
-La demande a été ajouté au Google Sheet des demandes de réservations.
+La demande a été ajoutée au Google Sheet des demandes de réservation.
 Vous pouvez y accéder <a href="https://docs.google.com/spreadsheets/d/1vsS4lzw2_f0Npn565KGvk3SU_RyVWMuCk7JBiWtjUmc/edit#gid=0">ici</a>`
 }
