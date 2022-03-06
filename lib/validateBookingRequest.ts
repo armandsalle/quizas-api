@@ -3,7 +3,8 @@ import { z, ZodError } from "zod"
 
 /*
 {
-  "name": "Armand Sallé",
+  "name": "Armand",
+  "lastname": "Sallé",
   "email": "armand.salle@gmail.com",
   "phone": "0606060606",
   "people": 3,
@@ -59,6 +60,7 @@ const PhoneSchema = z
 
 const Schema = z.object({
   name: z.string().nonempty(),
+  lastname: z.string().nonempty(),
   email: z.string().email().nonempty(),
   phone: PhoneSchema,
   people: z

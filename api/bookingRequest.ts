@@ -2,8 +2,9 @@ import type { VercelRequest, VercelResponse } from "@vercel/node"
 import * as dotenv from "dotenv"
 import nc from "next-connect"
 
+import { addGoogleCalendarEvent } from "../lib/googleCalendar"
 import { addBookingRequestToGoogleSheet } from "../lib/googleSheets"
-import { getHTMLMail, sendMail } from "../lib/mail"
+import { sendMail } from "../lib/mail"
 import { validateBookingRequest } from "../lib/validateBookingRequest"
 import { allowHeadersMiddleware } from "../middlewares/allowHeaders"
 
@@ -27,12 +28,17 @@ handler.post(async (req, res) => {
 
     const { error: GSerror } = await addBookingRequestToGoogleSheet(data)
 
+    await addGoogleCalendarEvent(
+      data,
+      `Demande - ${data.room} - ${data.name} ${data.lastname}`
+    )
+
     if (GSerror) {
       throw GSerror
     }
 
     try {
-      await sendMail(getHTMLMail(data))
+      await sendMail(data)
     } catch (e) {
       res.status(500).json({ success: false, error: e })
 

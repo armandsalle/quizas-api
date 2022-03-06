@@ -2,14 +2,13 @@ import type { calendar_v3 } from "googleapis"
 
 import type { Events, _Bedroom, _Event, _EventType } from "../types/types"
 import { getGoogleCalendarEvents } from "./googleCalendar"
-import { connect, getCachedEvents, setCachedEvents } from "./redis"
 import { DateSchema } from "./validateDates"
 
-// [RESA] for a booked room, [OFF] for everything else
+// R for a booked room, OFF for everything else
 function getEventType(eventTitle: string): _EventType | null {
-  return eventTitle.includes("[RESA]")
+  return eventTitle.includes("R -")
     ? "RESA"
-    : eventTitle.includes("[OFF]")
+    : eventTitle.includes("OFF")
     ? "OFF"
     : null
 }
@@ -19,7 +18,7 @@ function getBedroom(type: _EventType, title: string): _Bedroom | null {
 
   if (type === "RESA") {
     // Get the rest of the event title
-    const eventBedroom = title.split("[RESA] - ")[1]
+    const eventBedroom = title.split("R - ")[1]
 
     switch (eventBedroom) {
       case "LC":
@@ -66,64 +65,48 @@ function getFilteredEvents(events: calendar_v3.Schema$Event[]): Events {
 export default async function getEvents(dates?: DateSchema): Promise<{
   events: Events
   error: Error | null
-  getFromCatch: boolean
 }> {
   if (dates) {
     try {
       const { events, error } = await getGoogleCalendarEvents(dates)
 
       if (error) {
-        return { events: [], error, getFromCatch: false }
+        return { events: [], error }
       }
 
       const eventCollection = getFilteredEvents(events)
 
-      return { events: eventCollection, error: null, getFromCatch: false }
+      return { events: eventCollection, error: null }
     } catch (error) {
       if (error instanceof Error) {
-        return { events: [], error, getFromCatch: false }
+        return { events: [], error }
       }
 
       return {
         events: [],
         error: new Error("Something went wrong while fetching filtered events"),
-        getFromCatch: false,
       }
     }
   }
 
-  // Defer close connection to try{}catch{}finaly{}
-  const redisClient = await connect()
-
   try {
-    const cachedEvents = await getCachedEvents(redisClient)
+    const { events, error } = await getGoogleCalendarEvents()
 
-    // No cache or error with the cache -> refetch and filter
-    if (!cachedEvents) {
-      const { events, error } = await getGoogleCalendarEvents()
-
-      if (error) {
-        return { events: [], error, getFromCatch: false }
-      }
-
-      const eventCollection = getFilteredEvents(events)
-      await setCachedEvents(redisClient, eventCollection)
-
-      return { events: eventCollection, error: null, getFromCatch: false }
+    if (error) {
+      return { events: [], error }
     }
 
-    return { events: cachedEvents, error: null, getFromCatch: true }
+    const eventCollection = getFilteredEvents(events)
+
+    return { events: eventCollection, error: null }
   } catch (error) {
     if (error instanceof Error) {
-      return { events: [], error, getFromCatch: false }
+      return { events: [], error }
     }
 
     return {
       events: [],
       error: new Error("Something went wrong while filtering events"),
-      getFromCatch: false,
     }
-  } finally {
-    redisClient?.quit()
   }
 }

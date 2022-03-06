@@ -14,15 +14,15 @@ handler.use((req, res, next) =>
   allowHeadersMiddleware(req, res, next, ["GET", "POST"])
 )
 
-handler.get(async (req, res) => {
+handler.get(async (_, res) => {
   try {
-    const { events, error, getFromCatch } = await getEvents()
+    const { events, error } = await getEvents()
 
     if (error) {
       throw error
     }
 
-    res.status(200).json({ success: true, events, getFromCatch })
+    res.status(200).json({ success: true, events })
   } catch (error) {
     res.status(500).json({ success: false, error })
   }
@@ -38,13 +38,13 @@ handler.post(async (req, res) => {
       throw errors
     }
 
-    const { events, error, getFromCatch } = await getEvents(data)
+    const { events, error } = await getEvents(data)
 
     if (error) {
       throw error
     }
 
-    res.status(200).json({ success: true, events, getFromCatch })
+    res.status(200).json({ success: true, events })
   } catch (error) {
     res.status(500).json({ success: false, error })
   }
