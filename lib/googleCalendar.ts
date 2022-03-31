@@ -1,4 +1,4 @@
-import { addYears, format } from "date-fns"
+import { addDays, addYears, format } from "date-fns"
 import { google } from "googleapis"
 import type { calendar_v3 } from "googleapis"
 
@@ -61,7 +61,10 @@ export async function addGoogleCalendarEvent(data: DataSchema, title: string) {
           timeZone: "Europe/Paris",
         },
         end: {
-          date: format(new Date(data.dates.departure), "yyyy-MM-dd"),
+          date: format(
+            addDays(new Date(data.dates.departure), 1),
+            "yyyy-MM-dd"
+          ),
           timeZone: "Europe/Paris",
         },
         description: getHTMLDescription(data),
