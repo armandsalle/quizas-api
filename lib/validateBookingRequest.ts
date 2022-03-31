@@ -84,7 +84,7 @@ const Schema = z.object({
 
 export type DataSchema = z.infer<typeof Schema>
 
-export function validateBookingRequest(rawData: string):
+export function validateBookingRequest(rawData: string | object):
   | {
       errors: z.inferFlattenedErrors<typeof Schema>
       data: null
@@ -94,7 +94,8 @@ export function validateBookingRequest(rawData: string):
       data: DataSchema
     } {
   try {
-    const parsedData: unknown = JSON.parse(rawData)
+    const parsedData: unknown =
+      typeof rawData === "string" ? JSON.parse(rawData) : rawData
     const data = Schema.parse(parsedData)
 
     return { data, errors: null }
